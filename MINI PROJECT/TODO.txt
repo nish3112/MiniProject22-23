@@ -1,0 +1,21 @@
+Dataset:
+
+[ ] Giving accuracy of 91% (training 99.99%) --> cause --> overfitting --> Try fixing that
+
+[ ] Latest model -> 91% with UMAP (normalized or not)
+
+
+
+Extension:
+
+[ ] dynamic icon bug --> Showing icon location invalid --> hence not updating
+    Tried :Absolute path/ Relative path, multiple codes, migrating from v2 to v3 and downgrading as well
+
+[x] Infinite loop --> Solved
+
+
+Server:
+
+[x] Cors --> Solved
+[ ] Implement the workflow (partial done --> substitue the variable)
+[ ] Try threading for mongo db along with machine learning --> For optimization
