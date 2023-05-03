@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Icon Display</title>
+    <style>
+      /* Resize all images to the same height */
+      img {
+        height: 30px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      
+      /* Add some space between the images and their descriptions */
+      .icon {
+        margin-bottom: 20px;
+      }
+      
+      /* Style the description text */
+      .description {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      body {
+        padding: 5%;
+    width: 400px;
+    height: 200px;
+  }
+    </style>
+  </head>
+  <body>
+    <div class="icon">
+      <img src="icons/tick-resized.png" alt="Icon 1">
+      <p class="description">URL is safe</p>
+    </div>
+    <div class="icon">
+      <img src="icons/cross-resized.png" alt="Icon 2">
+      <p class="description">URL is malicious</p>
+    </div>
+    <div class="icon">
+      <img src="icons/default-icon.png" alt="Icon 3">
+      <p class="description">Processing the url whether it is safe or not</p>
+    </div>
+  </body>
+</html>
+

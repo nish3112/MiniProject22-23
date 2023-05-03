@@ -1,13 +1,3 @@
-# TODO : Solve the infinite loop problem --> DONE CHECK IT ONCE 
-# TODO : Implement the sql thing --> Done
-# TODO : Get the UMAP model
-# TODO : The new rf model --> without legitimate and othe func check if time permits
-# TODO : Solve the icon bug
-# TODO : Write the function to collect the @,$,etc symbols and process it through UMAP --> done
-# TODO : Pipeline it through the rf model
-
-
-
 
 import re
 from urllib.parse import urlparse
@@ -15,6 +5,11 @@ import requests
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 import whois
+from urllib.parse import urlparse
+from scipy.stats import entropy
+import pandas as pd
+import tldextract
+
 
 
 def url_length(url):
@@ -89,108 +84,241 @@ def get_path_length(url):
 def get_query_length(url):
         return len(urlparse(url).query)
     
+# def abnormal_features(url):
+#         try:
+#             headers = {
+#                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+#             }
+#             response = requests.get(url, headers=headers, timeout=5)
+#         except:
+#             return 0, 0, 0, 0, 0
+
+#         if response.status_code != 200:
+#             return 0, 0, 0, 0, 0
+
+#         parsed_url = urlparse(url)
+#         domain = parsed_url.netloc
+
+#         external_links = []
+#         external_count = 0
+#         total_count = 0
+
+#         soup = BeautifulSoup(response.text, "html.parser")
+
+#         for link in soup.find_all("a"):
+#             if "href" in link.attrs:
+#                 href = link["href"]
+#                 if "http" in href:
+#                     total_count += 1
+#                     if domain not in href:
+#                         external_links.append(href)
+#                         external_count += 1
+
+#         meta_count = response.text.count("<meta")
+#         script_count = response.text.count("<script")
+#         link_count = response.text.count("<link")
+
+#         for link in response.text.split("src="):
+#             if "http" in link:
+#                 total_count += 1
+#                 if domain not in link:
+#                     external_links.append(link.strip("'\""))
+#                     external_count += 1
+
+#         try:
+#             request_url_percentage = (len(external_links) / total_count) * 100
+#         except ZeroDivisionError:
+#             request_url_percentage = 0
+
+#         if request_url_percentage < 22:
+#             request_url_feature = 2
+#         elif request_url_percentage >= 22 and request_url_percentage <= 61:
+#             request_url_feature = 1
+#         else:
+#             request_url_feature = 0
+
+#         try:
+#             anchor_url_percentage = (external_count / total_count) * 100
+#         except ZeroDivisionError:
+#             anchor_url_percentage = 0
+
+#         if anchor_url_percentage < 31:
+#             anchor_url_feature = 2
+#         elif anchor_url_percentage >= 31 and anchor_url_percentage <= 67:
+#             anchor_url_feature = 1
+#         else:
+#             anchor_url_feature = 0
+
+#         try:
+#             link_percentage = (external_count / total_count) * 100
+#         except ZeroDivisionError:
+#             link_percentage = 0
+
+#         if link_percentage < 17:
+#             meta_script_link_feature = 2
+#         elif link_percentage >= 17 and link_percentage <= 81:
+#             meta_script_link_feature = 1
+#         else:
+#             meta_script_link_feature = 0
+
+#         form_action = ""
+#         for line in response.text.split("\n"):
+#             if "<form" in line:
+#                 if 'action="' in line:
+#                     form_action = line.split('action="')[1].split('"')[0]
+#                 else:
+#                     form_action = url
+#                 break
+
+#         if not form_action or form_action == "about:blank":
+#             sfh_feature = 0
+#         else:
+#             form_action_domain = urlparse(form_action).netloc
+#             if form_action_domain and form_action_domain != domain:
+#                 sfh_feature = 1
+#             else:
+#                 sfh_feature = 2
+
+#         try:
+#             domain_info = whois.whois(domain)
+#             if domain_info is None:
+#                 domain_check = 0
+#             else:
+#                 domain_check = 1
+#         except:
+#             domain_check = 0
+
+#         return request_url_feature, anchor_url_feature, meta_script_link_feature, sfh_feature, domain_check
+
+
+
+
 def abnormal_features(url):
-        try:
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-            }
-            response = requests.get(url, headers=headers, timeout=5)
-        except:
-            return 0, 0, 0, 0, 0
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        }
+        response = requests.get(url, headers=headers, timeout=5)
+    except:
+        return [0, 0, 0, 0, 0]
 
-        if response.status_code != 200:
-            return 0, 0, 0, 0, 0
+    if response.status_code != 200:
+        return [0, 0, 0, 0, 0]
 
-        parsed_url = urlparse(url)
-        domain = parsed_url.netloc
+    parsed_url = urlparse(url)
+    domain = parsed_url.netloc
 
-        external_links = []
-        external_count = 0
-        total_count = 0
+    external_links = []
+    external_count = 0
+    total_count = 0
 
-        soup = BeautifulSoup(response.text, "html.parser")
+    soup = BeautifulSoup(response.text, "html.parser")
 
-        for link in soup.find_all("a"):
-            if "href" in link.attrs:
-                href = link["href"]
-                if "http" in href:
-                    total_count += 1
-                    if domain not in href:
-                        external_links.append(href)
-                        external_count += 1
-
-        meta_count = response.text.count("<meta")
-        script_count = response.text.count("<script")
-        link_count = response.text.count("<link")
-
-        for link in response.text.split("src="):
-            if "http" in link:
+    for link in soup.find_all("a"):
+        if "href" in link.attrs:
+            href = link["href"]
+            if "http" in href:
                 total_count += 1
-                if domain not in link:
-                    external_links.append(link.strip("'\""))
+                if domain not in href:
+                    external_links.append(href)
                     external_count += 1
 
-        try:
-            request_url_percentage = (len(external_links) / total_count) * 100
-        except ZeroDivisionError:
-            request_url_percentage = 0
+    meta_count = response.text.count("<meta")
+    script_count = response.text.count("<script")
+    link_count = response.text.count("<link")
 
-        if request_url_percentage < 22:
-            request_url_feature = 2
-        elif request_url_percentage >= 22 and request_url_percentage <= 61:
-            request_url_feature = 1
+    for link in response.text.split("src="):
+        if "http" in link:
+            total_count += 1
+            if domain not in link:
+                external_links.append(link.strip("'\""))
+                external_count += 1
+
+    try:
+        request_url_percentage = (len(external_links) / total_count) * 100
+    except ZeroDivisionError:
+        request_url_percentage = 0
+
+    if request_url_percentage < 22:
+        request_url_feature = 1
+    else:
+        request_url_feature = 0
+
+    try:
+        anchor_url_percentage = (external_count / total_count) * 100
+    except ZeroDivisionError:
+        anchor_url_percentage = 0
+
+    if anchor_url_percentage < 31:
+        anchor_url_feature = 1
+    else:
+        anchor_url_feature = 0
+
+    try:
+        link_percentage = (external_count / total_count) * 100
+    except ZeroDivisionError:
+        link_percentage = 0
+
+    if link_percentage < 17:
+        meta_script_link_feature = 1
+    else:
+        meta_script_link_feature = 0
+
+    form_action = ""
+    for line in response.text.split("\n"):
+        if "<form" in line:
+            if 'action="' in line:
+                form_action = line.split('action="')[1].split('"')[0]
+            else:
+                form_action = url
+            break
+
+    if not form_action or form_action == "about:blank":
+        sfh_feature = 0
+    else:
+        form_action_domain = urlparse(form_action).netloc
+        if form_action_domain and form_action_domain != domain:
+            sfh_feature = 1
         else:
-            request_url_feature = 0
-
-        try:
-            anchor_url_percentage = (external_count / total_count) * 100
-        except ZeroDivisionError:
-            anchor_url_percentage = 0
-
-        if anchor_url_percentage < 31:
-            anchor_url_feature = 2
-        elif anchor_url_percentage >= 31 and anchor_url_percentage <= 67:
-            anchor_url_feature = 1
-        else:
-            anchor_url_feature = 0
-
-        try:
-            link_percentage = (external_count / total_count) * 100
-        except ZeroDivisionError:
-            link_percentage = 0
-
-        if link_percentage < 17:
-            meta_script_link_feature = 2
-        elif link_percentage >= 17 and link_percentage <= 81:
-            meta_script_link_feature = 1
-        else:
-            meta_script_link_feature = 0
-
-        form_action = ""
-        for line in response.text.split("\n"):
-            if "<form" in line:
-                if 'action="' in line:
-                    form_action = line.split('action="')[1].split('"')[0]
-                else:
-                    form_action = url
-                break
-
-        if not form_action or form_action == "about:blank":
             sfh_feature = 0
-        else:
-            form_action_domain = urlparse(form_action).netloc
-            if form_action_domain and form_action_domain != domain:
-                sfh_feature = 1
-            else:
-                sfh_feature = 2
 
-        try:
-            domain_info = whois.whois(domain)
-            if domain_info is None:
-                domain_check = 0
-            else:
-                domain_check = 1
-        except:
+    try:
+        domain_info = whois.whois(domain)
+        if domain_info is None:
             domain_check = 0
+        else:
+            domain_check = 1
+    except:
+        domain_check = 0
 
-        return request_url_feature, anchor_url_feature, meta_script_link_feature, sfh_feature, domain_check
+    return request_url_feature, anchor_url_feature, meta_script_link_feature, sfh_feature, domain_check
+
+def url_entropy(url):
+    url_chars = list(url)
+    value, counts = zip(*dict(pd.Series(url_chars).value_counts()).items())
+    probs = [float(c) / len(url_chars) for c in counts]
+    return entropy(probs)
+
+def domain_entropy(url):
+    domain = urlparse(url).netloc
+    domain_chars = list(domain)
+    value, counts = zip(*dict(pd.Series(domain_chars).value_counts()).items())
+    probs = [float(c) / len(domain_chars) for c in counts]
+    return entropy(probs)
+
+def get_subdomain_level(url):
+    ext = tldextract.extract(url)
+    subdomain = ext.subdomain
+    subdomain_levels = subdomain.count('.') + 1
+    return subdomain_levels
+
+
+def get_url_depth(url):
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+    depth = path.count('/')
+    return depth
+
+def has_https_in_domain(url):
+    domain = urlparse(url).netloc
+    return int(domain.startswith('https'))

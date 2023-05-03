@@ -1,19 +1,103 @@
+
+
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>My Extension Popup</title>
-    <style>
-      body {
-        width: 200px;
-        height: 100px;
-      }
-      h1 {
-        text-align: center;
-        font-size: 24px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-  </body>
+<head>
+  <title>Alert Message</title>
+  
+<style>
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320;
+  height: 480;
+  display: flex;
+}
+
+span img, span h2 {
+  display: inline-block;
+  vertical-align: middle; 
+  height: auto;
+  color: #d32f2f8e;
+}
+
+.popup-content {
+  width: 320px;
+  height: 480px;
+  background-image: url("OIP2.jpg");
+  background-size: cover;
+  /* background-position: right; */
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.popup-content h2 {
+  font-size: 36px;
+  color: rgb(145, 5, 5);
+  margin-bottom: 8px;
+  background-color:white;
+  display: inline-block;
+  width: 150px;
+  text-align: center;
+  margin-left: 90px;
+}
+
+.popup-content img {
+  width: 80px;
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
+.popup-content p {
+  font-size: 15px;
+  color: white;
+  margin-bottom: 16px;
+  margin-left: 1px;
+  margin-right: 4px;
+}
+
+#description-container{
+  font-size: 15px;
+  color: white;
+  margin-bottom: 16px;
+  margin-left: 1px;
+  margin-right: 4px;
+}
+
+h3{
+  font-size: 18px;
+  font-weight: bold;
+  color: #aa0f04;
+  background-color: white;
+  font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+  <center>
+  <div class="popup-container">
+    <div class="popup-content">
+      <div class="glowing-circle">
+        <span><img src="icons/xyza.png" alt="Icon"> </span>
+      </div>
+
+      <h2><b>ALERT!</b></h2>
+
+      <b><p style="font-size: 18px;">We've detected a malicious URL.</p>
+      <h3 style="font-size: 18px;"><i><b><b>Type: <div id="result-container"></div></b></b></i></h3>
+      <b><p style="font-size: 10px; margin-left: 0px; color: white;"><div id="description-container"></div></b></p>
+      <script src="popup.js"></script>
+      <p style="margin-right: 5px;">For your safety, we recommend that you don't proceed any further.</p></b>
+      <br>
+      <!-- Malicious: This website may infect your device, steal your personal information, or exploit vulnerabilities in your web browser or operating system.
+      Phishing: This website may steal your login credentials, credit card details, or other sensitive information.
+      Defacement: This website may download malware or compromise personal information or login credentials.  -->
+    </div>
+  </div>
+</center>  
+</body>
 </html>
